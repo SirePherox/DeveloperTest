@@ -5,7 +5,9 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private Transform gunNuzzle;
     private CharacterController playerCharController;
+    private PuzzleManager puzzleManager;
 
     [Header("Variables")]
     //movement
@@ -22,6 +24,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        puzzleManager = GameObject.Find(GameTags.puzzleMan).GetComponent<PuzzleManager>();
     }
 
     // Update is called once per frame
@@ -45,23 +48,43 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    //private void FireWeapon()
-    //{
-    //    bool isFireWeapon = InputHandler.instance.GetFireButton();
-    //    if (isFireWeapon)
-    //    {
-    //        Debug.Log("FireWeapon");
-    //    }
-
-
-    //}
+   
 
     private void FireWeapon()
     {
         if (InputHandler.instance.GetFireButton() && Time.time >= nextFireTime)
         {
-            Debug.Log("FireWeapon");
+            RaycastHit hit;
+            if (Physics.Raycast(gunNuzzle.position, transform.forward, out hit))
+            {
+                Debug.Log("Shooot");
+                if(hit.collider != null)
+                {
+                    Debug.Log("Hit Something");
+                }
+                if (hit.collider.CompareTag(GameTags.sphereTag))
+                {
+                    // Get the color of the sphere and check if it matches the color variable
+                    Renderer sphereRenderer = hit.collider.GetComponent<Renderer>();
+                    if (sphereRenderer != null && sphereRenderer.material.color == puzzleManager.GetCurrentColorToShoot())
+                    {
+                        // Destroy the sphere if the colors match
+                        Destroy(hit.collider.gameObject);
+                        Debug.Log("Correct Sphere Hit!");
+                        RemoveShotColor();
+                    }
+                }
+            }
             nextFireTime = Time.time + fireRate;
+        }
+    }
+
+    private void RemoveShotColor()
+    {
+        if(puzzleManager.correctColorOrder.Count != 0)
+        {
+            //removes the first color from the list, if the player shoots the right color
+            puzzleManager.correctColorOrder.RemoveAt(0);
         }
     }
 

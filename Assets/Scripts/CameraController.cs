@@ -6,7 +6,7 @@ public class CameraController : MonoBehaviour
 {
     [Header("Variables")]
     [SerializeField] private float mouseSensitivity = 2.0f;
-    private float mouseClampAngle = 90.0f;
+    private float mouseClampAngle= 110.0f;
     // Start is called before the first frame update
     void Start()
     {
