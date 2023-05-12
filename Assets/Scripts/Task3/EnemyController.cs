@@ -15,7 +15,10 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float patrolRadius = 1f;
     private int currentPatrolPointIndex;
     [SerializeField] private bool isPatrolling;
-
+    [SerializeField] private List<Vector3> patrolPos ;
+    [SerializeField] private List<Vector3> availablePatrolPos = new List<Vector3>();
+    
+    private bool isMovingToPatrolPoint;
     [SerializeField] public enum EnemyState
     {
         Idle,
@@ -35,17 +38,19 @@ public class EnemyController : MonoBehaviour
         currentState = EnemyState.Idle;
         agent.destination = transform.position;
 
+        GetAllPatrolPositions();
     }
 
     // Update is called once per frame
     void Update()
     {
+        //call functions
         UpdatePatrolState();
-        //if (isPatrolling)
-        //{
-        //    agent.destination = GetRandomPos();
-        //}
 
+        if (!isMovingToPatrolPoint && currentState == EnemyState.Patrol)
+        {
+            StartCoroutine(Patrol());
+        }
     }
 
     private void UpdatePatrolState()
@@ -58,14 +63,7 @@ public class EnemyController : MonoBehaviour
                 break;
 
             case EnemyState.Patrol:
-                if (isPatrolling)
-                {
-
-                    Debug.Log("Should start corountine");
-                    //agent.destination = transformDest.position;
-                    StartCoroutine(Patrol());
-                }
-                animator.SetBool("IsWalking", true); 
+                animator.SetBool("IsWalking", true);
                 break;
         }
     }
@@ -84,56 +82,51 @@ public class EnemyController : MonoBehaviour
     }
 
 
-
-     IEnumerator Patrol()
+    IEnumerator Patrol()
     {
+        isMovingToPatrolPoint = true; // set flag to true
         currentPatrolPointIndex = (currentPatrolPointIndex + 1) % patrolPoints.Length;
-        Vector3 target = GetRandomPos(); //GetRandomPointInRadius(patrolPoints[currentPatrolPointIndex].position, patrolRadius);
+        Vector3 target = GetRandomPos(); 
         agent.SetDestination(target);
         Debug.Log(agent.SetDestination(target));
         while (agent.remainingDistance > agent.stoppingDistance)
         {
+            isMovingToPatrolPoint = true; // set flag to false
             yield return null;
         }
-        yield return null;
-    }
-
-    IEnumerator Patrolll()
-    {
-        // Move to next patrol point
-        currentPatrolPointIndex = (currentPatrolPointIndex + 1) % patrolPoints.Length;
-        Vector3 target = GetRandomPointInRadius(patrolPoints[currentPatrolPointIndex].position, patrolRadius);
-        agent.SetDestination(target);
-
-        // Wait until destination is reached
-        while (agent.remainingDistance > agent.stoppingDistance)
+        
+        if(agent.remainingDistance <= agent.stoppingDistance)
         {
-            yield return null;
+            StopPatrolling();
+            isMovingToPatrolPoint = false;
         }
 
         yield return null;
     }
 
-    private void GoToDestination()
-    {
-        agent.destination = transformDest.position;
-    }
-    
-    Vector3 GetRandomPointInRadius(Vector3 center, float radius)
-    {
-        Vector3 randomPos = Random.insideUnitSphere * radius;
-        randomPos += center;
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomPos, out hit, radius, NavMesh.AllAreas);
-        return hit.position;
-    }
 
     private Vector3 GetRandomPos()
     {
-        int randIndex = Random.Range(0, patrolPoints.Length -1);
-        return (patrolPoints[randIndex].position);
+        if(availablePatrolPos.Count == 0)
+        {
+            availablePatrolPos = new List<Vector3>(patrolPos);
+        }
+        Vector3 randPos;
+        int randIndex = Random.Range(0, availablePatrolPos.Count -1);
+        randPos = (availablePatrolPos[randIndex]);
+        availablePatrolPos.RemoveAt(randIndex);
+        return randPos;
     }
 
+    private void GetAllPatrolPositions()
+    {
+        for (int i = 0; i < patrolPoints.Length; i++)
+        {
+            patrolPos[i] = patrolPoints[i].position;
+        }
+        availablePatrolPos = new List<Vector3>(patrolPos);
+
+    }
     #region -Button Onclick-
     public void StartPatrol()
     {

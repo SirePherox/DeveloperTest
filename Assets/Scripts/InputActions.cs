@@ -62,6 +62,15 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Sprint"",
+                    ""type"": ""Button"",
+                    ""id"": ""1e70452e-a556-4767-8c43-c4b6ca691ccd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -152,6 +161,17 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""action"": ""TogglePatrol"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b05e22f-8ff9-427a-996f-f6e147008ed3"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +184,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         m_PlayerInputs_Fire = m_PlayerInputs.FindAction("Fire", throwIfNotFound: true);
         m_PlayerInputs_MouseLook = m_PlayerInputs.FindAction("MouseLook", throwIfNotFound: true);
         m_PlayerInputs_TogglePatrol = m_PlayerInputs.FindAction("TogglePatrol", throwIfNotFound: true);
+        m_PlayerInputs_Sprint = m_PlayerInputs.FindAction("Sprint", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -227,6 +248,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerInputs_Fire;
     private readonly InputAction m_PlayerInputs_MouseLook;
     private readonly InputAction m_PlayerInputs_TogglePatrol;
+    private readonly InputAction m_PlayerInputs_Sprint;
     public struct PlayerInputsActions
     {
         private @InputActions m_Wrapper;
@@ -235,6 +257,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         public InputAction @Fire => m_Wrapper.m_PlayerInputs_Fire;
         public InputAction @MouseLook => m_Wrapper.m_PlayerInputs_MouseLook;
         public InputAction @TogglePatrol => m_Wrapper.m_PlayerInputs_TogglePatrol;
+        public InputAction @Sprint => m_Wrapper.m_PlayerInputs_Sprint;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInputs; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -256,6 +279,9 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @TogglePatrol.started -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnTogglePatrol;
                 @TogglePatrol.performed -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnTogglePatrol;
                 @TogglePatrol.canceled -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnTogglePatrol;
+                @Sprint.started -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnSprint;
+                @Sprint.performed -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnSprint;
+                @Sprint.canceled -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnSprint;
             }
             m_Wrapper.m_PlayerInputsActionsCallbackInterface = instance;
             if (instance != null)
@@ -272,6 +298,9 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @TogglePatrol.started += instance.OnTogglePatrol;
                 @TogglePatrol.performed += instance.OnTogglePatrol;
                 @TogglePatrol.canceled += instance.OnTogglePatrol;
+                @Sprint.started += instance.OnSprint;
+                @Sprint.performed += instance.OnSprint;
+                @Sprint.canceled += instance.OnSprint;
             }
         }
     }
@@ -282,5 +311,6 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         void OnFire(InputAction.CallbackContext context);
         void OnMouseLook(InputAction.CallbackContext context);
         void OnTogglePatrol(InputAction.CallbackContext context);
+        void OnSprint(InputAction.CallbackContext context);
     }
 }
