@@ -7,21 +7,23 @@ public class EnemyController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform[] patrolPoints;
+    public Transform transformDest;
     private NavMeshAgent agent;
     private Animator animator;
 
     [Header("Variables")]
-    [SerializeField] private float patrolRadius = 5f;
+    [SerializeField] private float patrolRadius = 1f;
     private int currentPatrolPointIndex;
-    private bool isPatrolling;
+    [SerializeField] private bool isPatrolling;
 
-    private enum EnemyState
+    [SerializeField] public enum EnemyState
     {
         Idle,
         Patrol
     }
 
     private EnemyState currentState;
+
 
     // Start is called before the first frame update
     void Start()
@@ -31,15 +33,19 @@ public class EnemyController : MonoBehaviour
 
         // Set initial state to idle
         currentState = EnemyState.Idle;
+        agent.destination = transform.position;
 
-        // Start patrolling
-        StartPatrolling();
     }
 
     // Update is called once per frame
     void Update()
     {
         UpdatePatrolState();
+        //if (isPatrolling)
+        //{
+        //    agent.destination = GetRandomPos();
+        //}
+
     }
 
     private void UpdatePatrolState()
@@ -52,9 +58,12 @@ public class EnemyController : MonoBehaviour
                 break;
 
             case EnemyState.Patrol:
-                if (!isPatrolling)
+                if (isPatrolling)
                 {
-                    StartCoroutine(Patrol()); 
+
+                    Debug.Log("Should start corountine");
+                    //agent.destination = transformDest.position;
+                    StartCoroutine(Patrol());
                 }
                 animator.SetBool("IsWalking", true); 
                 break;
@@ -74,25 +83,41 @@ public class EnemyController : MonoBehaviour
         currentState = EnemyState.Idle;
     }
 
-    IEnumerator Patrol()
+
+
+     IEnumerator Patrol()
     {
+        currentPatrolPointIndex = (currentPatrolPointIndex + 1) % patrolPoints.Length;
+        Vector3 target = GetRandomPos(); //GetRandomPointInRadius(patrolPoints[currentPatrolPointIndex].position, patrolRadius);
+        agent.SetDestination(target);
+        Debug.Log(agent.SetDestination(target));
+        while (agent.remainingDistance > agent.stoppingDistance)
+        {
+            yield return null;
+        }
+        yield return null;
+    }
+
+    IEnumerator Patrolll()
+    {
+        // Move to next patrol point
         currentPatrolPointIndex = (currentPatrolPointIndex + 1) % patrolPoints.Length;
         Vector3 target = GetRandomPointInRadius(patrolPoints[currentPatrolPointIndex].position, patrolRadius);
         agent.SetDestination(target);
 
+        // Wait until destination is reached
         while (agent.remainingDistance > agent.stoppingDistance)
         {
             yield return null;
         }
 
-        if (PlayerIsDetected())
-        {
-            StopPatrolling();
-        }
-
         yield return null;
     }
 
+    private void GoToDestination()
+    {
+        agent.destination = transformDest.position;
+    }
     
     Vector3 GetRandomPointInRadius(Vector3 center, float radius)
     {
@@ -103,9 +128,21 @@ public class EnemyController : MonoBehaviour
         return hit.position;
     }
 
-  
-    bool PlayerIsDetected()
+    private Vector3 GetRandomPos()
     {
-        return false;
+        int randIndex = Random.Range(0, patrolPoints.Length -1);
+        return (patrolPoints[randIndex].position);
     }
+
+    #region -Button Onclick-
+    public void StartPatrol()
+    {
+        StartPatrolling();
+    }
+
+    public void StopPatrol()
+    {
+        StopPatrolling();
+    }
+    #endregion
 }

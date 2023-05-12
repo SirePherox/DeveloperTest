@@ -53,6 +53,15 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""TogglePatrol"",
+                    ""type"": ""Button"",
+                    ""id"": ""e1268958-ef6d-4839-938c-2bcf0ec352d3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -132,6 +141,17 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""action"": ""MouseLook"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7f47bab8-8a18-4ba6-bf57-dd74924f37e4"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TogglePatrol"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -143,6 +163,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         m_PlayerInputs_Move = m_PlayerInputs.FindAction("Move", throwIfNotFound: true);
         m_PlayerInputs_Fire = m_PlayerInputs.FindAction("Fire", throwIfNotFound: true);
         m_PlayerInputs_MouseLook = m_PlayerInputs.FindAction("MouseLook", throwIfNotFound: true);
+        m_PlayerInputs_TogglePatrol = m_PlayerInputs.FindAction("TogglePatrol", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -205,6 +226,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerInputs_Move;
     private readonly InputAction m_PlayerInputs_Fire;
     private readonly InputAction m_PlayerInputs_MouseLook;
+    private readonly InputAction m_PlayerInputs_TogglePatrol;
     public struct PlayerInputsActions
     {
         private @InputActions m_Wrapper;
@@ -212,6 +234,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_PlayerInputs_Move;
         public InputAction @Fire => m_Wrapper.m_PlayerInputs_Fire;
         public InputAction @MouseLook => m_Wrapper.m_PlayerInputs_MouseLook;
+        public InputAction @TogglePatrol => m_Wrapper.m_PlayerInputs_TogglePatrol;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInputs; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -230,6 +253,9 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @MouseLook.started -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnMouseLook;
                 @MouseLook.performed -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnMouseLook;
                 @MouseLook.canceled -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnMouseLook;
+                @TogglePatrol.started -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnTogglePatrol;
+                @TogglePatrol.performed -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnTogglePatrol;
+                @TogglePatrol.canceled -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnTogglePatrol;
             }
             m_Wrapper.m_PlayerInputsActionsCallbackInterface = instance;
             if (instance != null)
@@ -243,6 +269,9 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @MouseLook.started += instance.OnMouseLook;
                 @MouseLook.performed += instance.OnMouseLook;
                 @MouseLook.canceled += instance.OnMouseLook;
+                @TogglePatrol.started += instance.OnTogglePatrol;
+                @TogglePatrol.performed += instance.OnTogglePatrol;
+                @TogglePatrol.canceled += instance.OnTogglePatrol;
             }
         }
     }
@@ -252,5 +281,6 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnMouseLook(InputAction.CallbackContext context);
+        void OnTogglePatrol(InputAction.CallbackContext context);
     }
 }
