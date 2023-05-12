@@ -27,7 +27,6 @@ public class PlayerController : MonoBehaviour
         puzzleManager = GameObject.Find(GameTags.puzzleMan).GetComponent<PuzzleManager>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         //call functions
@@ -45,10 +44,9 @@ public class PlayerController : MonoBehaviour
         Vector2 mouseDelta = InputHandler.instance.GetMouseLook();
         float mouseX = mouseDelta.x * mouseSensitivity * Time.deltaTime;
         transform.Rotate(Vector3.up * mouseX);
-
     }
 
-   
+
 
     private void FireWeapon()
     {
@@ -58,7 +56,7 @@ public class PlayerController : MonoBehaviour
             if (Physics.Raycast(gunNuzzle.position, transform.forward, out hit))
             {
                 Debug.Log("Shooot");
-                if(hit.collider != null)
+                if (hit.collider != null)
                 {
                     Debug.Log("Hit Something");
                 }
@@ -70,7 +68,6 @@ public class PlayerController : MonoBehaviour
                     {
                         // Destroy the sphere if the colors match
                         Destroy(hit.collider.gameObject);
-                        Debug.Log("Correct Sphere Hit!");
                         RemoveShotColor();
                     }
                 }
@@ -81,7 +78,7 @@ public class PlayerController : MonoBehaviour
 
     private void RemoveShotColor()
     {
-        if(puzzleManager.correctColorOrder.Count != 0)
+        if (puzzleManager.correctColorOrder.Count != 0)
         {
             //removes the first color from the list, if the player shoots the right color
             puzzleManager.correctColorOrder.RemoveAt(0);

@@ -8,7 +8,7 @@ public class InputHandler : MonoBehaviour
     private InputActions inputActions;
 
     [Header("Movement Settings")]
-    public bool analogMovement;
+    public bool analogMovement = false;
 
     #region -Singleton Declaration-
     private static InputHandler _instance;
@@ -49,16 +49,10 @@ public class InputHandler : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public Vector2 GetMovementVector()
     {
         Vector2 moveVec = inputActions.PlayerInputs.Move.ReadValue<Vector2>();
-        Debug.Log(moveVec);
         return moveVec;
     }
 
@@ -85,5 +79,25 @@ public class InputHandler : MonoBehaviour
             isSprint = true;
         }
         return isSprint;
+    } 
+    
+    public bool GetJumpPress()
+    {
+        bool isJump = false;
+        if (inputActions.PlayerInputs.Jump.IsPressed())
+        {
+            isJump = true;
+        }
+        return isJump;
+    }
+
+    public bool GetCrouchPress()
+    {
+        bool isCrouch = false;
+        if (inputActions.PlayerInputs.Crouch.IsPressed())
+        {
+            isCrouch = true;
+        }
+        return isCrouch;
     }
 }

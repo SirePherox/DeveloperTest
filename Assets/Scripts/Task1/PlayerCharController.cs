@@ -5,56 +5,77 @@ using UnityEngine;
 public class PlayerCharController : MonoBehaviour
 {
     [Header("References")]
-    private InputHandler input;
-    private CharacterController controller;
+    private InputHandler playerInputAction;
+    private CharacterController charController;
     private GameObject mainCamera;
-    private Animator animator;
+    private PlayerAnimController animController;
 
     [Header("Variables")]
     [SerializeField] private float moveSpeed = 3.0f;
     [SerializeField] private float sprintSpeed = 5.5f;
+    [SerializeField] private float crouchSpeed = 1.5f;
     private float speedChangeRate = 10.0f; //for acceleration and decelaration
     private float rotationSmoothTime = 0.12f;
     private float speed;
     private float animationBlend;
-    private float _targetRotation = 0.0f;
-    private float _rotationVelocity;
-    private float _verticalVelocity;
+    private float targetRotation = 0.0f;
+    private float rotationVelocity;
+    private float verticalVelocity;
+    //jump
+    public bool isGrounded;
+    private float defaultJumpTimeout = 0.50f;
+    private float jumpTimeOut;
+    private float jumpHeight = 1.2f;
+    private float gravity = -15.0f;
+    private float terminalVelocity = 53.0f;
+    private float minYPos = -0.75f;
+
 
     private void Awake()
     {
-        controller = GetComponent<CharacterController>();
+        charController = GetComponent<CharacterController>();
+        animController = GetComponent<PlayerAnimController>();
+        //animator = GetComponent<Animator>();
         if (mainCamera == null)
         {
             mainCamera = GameObject.FindGameObjectWithTag(GameTags.mainCam);
         }
     }
-    // Start is called before the first frame update
+
     void Start()
     {
-        input = InputHandler.instance;
+        playerInputAction = InputHandler.instance;
+
+        //reset values on Start
+        jumpTimeOut = defaultJumpTimeout;
     }
 
-    // Update is called once per frame
     void Update()
     {
-
+        //call functions
+        Move();
+        CheckGrounded();
+        JumpAndGravity();
+        FireWeapon();
     }
 
     private void Move()
     {
         // set target speed based on movement
-        float targetSpeed = input.GetSprintPress() ? sprintSpeed : moveSpeed;
-
+        float targetSpeed = playerInputAction.GetSprintPress() ? sprintSpeed : moveSpeed;
+        if (playerInputAction.GetCrouchPress())
+        {
+            targetSpeed = crouchSpeed;
+        }
         // if there is no input, set the target speed to 0
-        if (input.GetMovementVector() == Vector2.zero) targetSpeed = 0.0f;
+        if (playerInputAction.GetMovementVector() == Vector2.zero) targetSpeed = 0.0f;
 
         // a reference to the players current horizontal velocity
-        float currentHorizontalSpeed = new Vector3(controller.velocity.x, 0.0f, controller.velocity.z).magnitude;
+        float currentHorizontalSpeed = new Vector3(charController.velocity.x, 0.0f, charController.velocity.z).magnitude;
 
 
         float speedOffset = 0.1f;
-        float inputMagnitude = input.analogMovement ? input.GetMovementVector().magnitude : 1f;
+        float inputMagnitude = playerInputAction.analogMovement ? playerInputAction.GetMovementVector().magnitude : 1f;
 
         // accelerate or decelerate to target speed
         if (currentHorizontalSpeed < targetSpeed - speedOffset ||
@@ -77,31 +98,79 @@ public class PlayerCharController : MonoBehaviour
         if (animationBlend < 0.01f) animationBlend = 0f;
 
         // normalise input direction
-        Vector3 inputDirection = new Vector3(input.GetMovementVector().x, 0.0f, input.GetMovementVector().y).normalized;
-
-        // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-        // if there is a move input rotate player when the player is moving
-        if (input.GetMovementVector() != Vector2.zero)
+        Vector3 inputDirection = new Vector3(playerInputAction.GetMovementVector().x, 0.0f, playerInputAction.GetMovementVector().y).normalized;
+        if (playerInputAction.GetMovementVector() != Vector2.zero)
         {
-            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+            targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
                               mainCamera.transform.eulerAngles.y;
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationVelocity,
                 rotationSmoothTime);
 
-            // rotate to face input direction relative to camera position
+            // rotate to face playerInputAction direction relative to camera position
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         }
 
 
-        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
+        Vector3 targetDirection = Quaternion.Euler(0.0f, targetRotation, 0.0f) * Vector3.forward;
         // move the player
-        controller.Move(targetDirection.normalized * (speed * Time.deltaTime) +
-                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        charController.Move(targetDirection.normalized * (speed * Time.deltaTime) +
+                         new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
 
         // update animator 
-        animator.SetFloat(AnimTags.speed, animationBlend);
-        //animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+        animController.SetMovementAnim(animationBlend);
+        animController.SetCrouchAnim(playerInputAction.GetCrouchPress());
 
+    }
+
+    private void CheckGrounded()
+    {
+        isGrounded = charController.isGrounded;
+        animController.SetGroundedBool(isGrounded);
+    }
+    
+    private void JumpAndGravity()
+    {
+        if (isGrounded)
+        {
+            animController.SetJumpBool(false);
+            // stop our velocity dropping infinitely when grounded
+            if (verticalVelocity < 0.0f)
+            {
+                verticalVelocity = 0.0f; // -2f;
+            }
+
+            // Jump
+            if (playerInputAction.GetJumpPress() && jumpTimeOut <= 0.0f)
+            {
+                verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                animController.SetJumpBool(true);
+            }
+
+            // jump timeout
+            if (jumpTimeOut >= 0.0f)
+            {
+                jumpTimeOut -= Time.deltaTime;
+            }
+        }
+        else
+        {
+            // reset the jump timeout timer
+            jumpTimeOut = defaultJumpTimeout;
+        }
+
+        // apply gravity over time 
+        if (verticalVelocity < terminalVelocity)
+        {
+            verticalVelocity += gravity * Time.deltaTime;
+        }
+    }
+
+    private void FireWeapon()
+    {
+        if (playerInputAction.GetFireButton() )
+        {
+            animController.SetFireTrigger();
+            Debug.Log("Shooting bullets");
+        }
     }
 }

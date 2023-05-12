@@ -55,7 +55,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""TogglePatrol"",
+                    ""name"": ""Jump"",
                     ""type"": ""Button"",
                     ""id"": ""e1268958-ef6d-4839-938c-2bcf0ec352d3"",
                     ""expectedControlType"": ""Button"",
@@ -67,6 +67,15 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""name"": ""Sprint"",
                     ""type"": ""Button"",
                     ""id"": ""1e70452e-a556-4767-8c43-c4b6ca691ccd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Crouch"",
+                    ""type"": ""Button"",
+                    ""id"": ""559d5d9e-ecc1-4b0f-aafb-fdebb755b7b0"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -130,6 +139,61 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
+                    ""name"": ""ArrowKeys"",
+                    ""id"": ""d55b17c6-e14a-43cf-9164-05111859b111"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""ae803bba-ad34-4a92-a720-68b55a6b44ff"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""5ed4970a-54c9-447b-8356-73c3c6169cb8"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""5d82eb6c-4e0e-48c5-aeeb-b885a535da5f"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""0e38739b-63b1-46ef-a245-c0f5c7901ff2"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
                     ""name"": """",
                     ""id"": ""6476a3f8-eb31-48a3-9939-edacb52243c8"",
                     ""path"": ""<Mouse>/press"",
@@ -158,7 +222,7 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""TogglePatrol"",
+                    ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -172,6 +236,17 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4ab595e5-0f32-49ec-9782-ec3625fad72b"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": ""Hold"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -183,8 +258,9 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         m_PlayerInputs_Move = m_PlayerInputs.FindAction("Move", throwIfNotFound: true);
         m_PlayerInputs_Fire = m_PlayerInputs.FindAction("Fire", throwIfNotFound: true);
         m_PlayerInputs_MouseLook = m_PlayerInputs.FindAction("MouseLook", throwIfNotFound: true);
-        m_PlayerInputs_TogglePatrol = m_PlayerInputs.FindAction("TogglePatrol", throwIfNotFound: true);
+        m_PlayerInputs_Jump = m_PlayerInputs.FindAction("Jump", throwIfNotFound: true);
         m_PlayerInputs_Sprint = m_PlayerInputs.FindAction("Sprint", throwIfNotFound: true);
+        m_PlayerInputs_Crouch = m_PlayerInputs.FindAction("Crouch", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -247,8 +323,9 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerInputs_Move;
     private readonly InputAction m_PlayerInputs_Fire;
     private readonly InputAction m_PlayerInputs_MouseLook;
-    private readonly InputAction m_PlayerInputs_TogglePatrol;
+    private readonly InputAction m_PlayerInputs_Jump;
     private readonly InputAction m_PlayerInputs_Sprint;
+    private readonly InputAction m_PlayerInputs_Crouch;
     public struct PlayerInputsActions
     {
         private @InputActions m_Wrapper;
@@ -256,8 +333,9 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_PlayerInputs_Move;
         public InputAction @Fire => m_Wrapper.m_PlayerInputs_Fire;
         public InputAction @MouseLook => m_Wrapper.m_PlayerInputs_MouseLook;
-        public InputAction @TogglePatrol => m_Wrapper.m_PlayerInputs_TogglePatrol;
+        public InputAction @Jump => m_Wrapper.m_PlayerInputs_Jump;
         public InputAction @Sprint => m_Wrapper.m_PlayerInputs_Sprint;
+        public InputAction @Crouch => m_Wrapper.m_PlayerInputs_Crouch;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInputs; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -276,12 +354,15 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @MouseLook.started -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnMouseLook;
                 @MouseLook.performed -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnMouseLook;
                 @MouseLook.canceled -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnMouseLook;
-                @TogglePatrol.started -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnTogglePatrol;
-                @TogglePatrol.performed -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnTogglePatrol;
-                @TogglePatrol.canceled -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnTogglePatrol;
+                @Jump.started -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnJump;
                 @Sprint.started -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnSprint;
                 @Sprint.performed -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnSprint;
                 @Sprint.canceled -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnSprint;
+                @Crouch.started -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnCrouch;
+                @Crouch.performed -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnCrouch;
+                @Crouch.canceled -= m_Wrapper.m_PlayerInputsActionsCallbackInterface.OnCrouch;
             }
             m_Wrapper.m_PlayerInputsActionsCallbackInterface = instance;
             if (instance != null)
@@ -295,12 +376,15 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
                 @MouseLook.started += instance.OnMouseLook;
                 @MouseLook.performed += instance.OnMouseLook;
                 @MouseLook.canceled += instance.OnMouseLook;
-                @TogglePatrol.started += instance.OnTogglePatrol;
-                @TogglePatrol.performed += instance.OnTogglePatrol;
-                @TogglePatrol.canceled += instance.OnTogglePatrol;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
                 @Sprint.started += instance.OnSprint;
                 @Sprint.performed += instance.OnSprint;
                 @Sprint.canceled += instance.OnSprint;
+                @Crouch.started += instance.OnCrouch;
+                @Crouch.performed += instance.OnCrouch;
+                @Crouch.canceled += instance.OnCrouch;
             }
         }
     }
@@ -310,7 +394,8 @@ public partial class @InputActions : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnMouseLook(InputAction.CallbackContext context);
-        void OnTogglePatrol(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnCrouch(InputAction.CallbackContext context);
     }
 }

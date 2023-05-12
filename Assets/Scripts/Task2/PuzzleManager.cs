@@ -16,10 +16,9 @@ public class PuzzleManager : MonoBehaviour
     [SerializeField] private List<Vector3> availablePos = new List<Vector3>();
     [SerializeField] private List<Color> sphereColors;
     [SerializeField] private List<Color> availableColors = new List<Color>();
-     public List<Color> correctColorOrder = new List<Color>();
+    public List<Color> correctColorOrder = new List<Color>();
     [SerializeField] private List<GameObject> instantiatedSpheres = new List<GameObject>();
 
-    // Start is called before the first frame update
     void Start()
     {
         isStartPuzzle = false;
@@ -27,14 +26,12 @@ public class PuzzleManager : MonoBehaviour
         AddSphereColorsToList();
     }
 
-    // Update is called once per frame
     void Update()
     {
         //call functions
         if (isStartPuzzle)
         {
             CheckSphereCount();
-
         }
     }
 
@@ -79,7 +76,7 @@ public class PuzzleManager : MonoBehaviour
 
     private Color GetRandomColor()
     {
-        if(availableColors.Count == 0)
+        if (availableColors.Count == 0)
         {
             availableColors = new List<Color>(sphereColors);
         }
@@ -102,11 +99,10 @@ public class PuzzleManager : MonoBehaviour
     private void CheckSphereCount()
     {
         GameObject[] sphereInScene = GameObject.FindGameObjectsWithTag(GameTags.sphereTag);
-        if(sphereInScene.Length == 0)
+        if (sphereInScene.Length == 0)
         {
             CreateSpheresRandomly();
         }
-        Debug.Log(sphereInScene.Length);
     }
 
     private void AddSphereColorsToList()
@@ -118,7 +114,7 @@ public class PuzzleManager : MonoBehaviour
 
     public Color GetCurrentColorToShoot()
     {
-        if(correctColorOrder.Count != 0)
+        if (correctColorOrder.Count != 0)
         {
             Color colorToShoot = correctColorOrder[0];
             return colorToShoot;

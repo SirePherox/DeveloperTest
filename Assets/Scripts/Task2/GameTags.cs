@@ -13,4 +13,8 @@ public class GameTags
 public class AnimTags
 {
     public const string speed = "Speed";
+    public const string grounded = "IsGrounded";
+    public const string jump = "Jump";
+    public const string fire = "Fire";
+    public const string crouch = "Crouch";
 }

@@ -10,13 +10,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI colorToShoot;
     private PuzzleManager puzzleManager;
 
-    // Start is called before the first frame update
     void Start()
     {
         puzzleManager = GameObject.Find(GameTags.puzzleMan).GetComponent<PuzzleManager>();
     }
-
-    // Update is called once per frame
     void Update()
     {
         //call functions
@@ -32,15 +29,15 @@ public class UIManager : MonoBehaviour
     private string GetColorText(Color color)
     {
         string colorText = " ";
-        if(color == Color.red)
+        if (color == Color.red)
         {
             colorText = "RED";
         }
-        else if(color == Color.green)
+        else if (color == Color.green)
         {
             colorText = "GREEN";
         }
-        else if(color == Color.yellow)
+        else if (color == Color.yellow)
         {
             colorText = "YELLOW";
         }
